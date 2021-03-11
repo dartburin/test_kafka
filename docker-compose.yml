@@ -1,0 +1,35 @@
+version: '3'
+services:       
+  client:
+    restart: always
+    container_name: gRPCclient
+    build:
+      context: .
+      dockerfile: Dockerfile-client
+      args:
+        - A_GRPC_HOST=serv
+        - A_GRPC_PORT=8086          
+    ports:
+      - "8086"  
+    networks:
+      - dockernet
+      
+  serv:
+    restart: always
+    container_name: gRPCserver
+    build:
+      context: .
+      dockerfile: Dockerfile-server
+      args:
+        - A_GRPC_PORT=8086
+        - A_K_HOST=172.17.0.1
+        - A_K_PORT=49154
+    ports:
+      - "127.0.0.1:8086:8086"  
+      - "49154"
+    networks:
+      - dockernet
+
+networks:
+  dockernet:
+    driver: bridge

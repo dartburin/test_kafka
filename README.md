@@ -1,6 +1,10 @@
 # test_kafka
 The test for Kafka with gRPC.
 
+Note: PPPPP - the port numer that has bind with the 9092 port in the Kafka container.
+	PPPPP will find in the output of the 'docker ps -a' command after run wurstmeister/kafka container
+	Update in the docker-compose.yml and in client start command. 
+
 
 Test method
 -----------
@@ -16,7 +20,7 @@ Compile client:
 	go build cmd/client/main.go
 Run client:
 	./main -grpchost=localhost -grpcport=8086
-	./main -grpchost=localhost -grpcport=8086 -kafkaport=49154
+	./main -grpchost=localhost -grpcport=8086 -kafkaport=PPPPP
 
 
 OR
@@ -25,7 +29,7 @@ Start bash in the container:
 	docker exec -it gRPCclient bash
 Run client:
 	./main -grpchost=serv -grpcport=8086
-	./main -grpchost=serv -grpcport=8086 -kafkahost=172.17.0.1 -kafkaport=49154
+	./main -grpchost=serv -grpcport=8086 -kafkahost=172.17.0.1 -kafkaport=PPPPP
 
 Note: If you will quit from client programm, please, type ~QUIT and press ENTER.
 

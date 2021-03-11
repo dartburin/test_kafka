@@ -1,0 +1,53 @@
+FROM golang:latest
+
+ARG A_GRPC_PORT=1111
+ARG A_K_HOST=172.17.0.1
+ARG A_K_PORT=49154
+
+ENV APP_NAME serverGRPC
+
+ENV GRPC_PORT=${A_GRPC_PORT} 
+ENV K_HOST=${A_K_HOST} 
+ENV K_PORT=${A_K_PORT} 
+
+#RUN go version
+
+RUN mkdir -p ${GOPATH}/src/${APP_NAME}
+WORKDIR ${GOPATH}/src/${APP_NAME}
+
+COPY go.mod ./
+COPY go.sum ./
+
+COPY ./cmd ./
+COPY ./cmd/server ./cmd/
+COPY ./cmd/server/* ./cmd/server/
+
+COPY ./api ./
+COPY ./api/proto ./api/
+COPY ./api/proto/* ./api/proto/
+
+#COPY ./third_party ./
+
+COPY ./pkg/ ./
+COPY ./pkg/server ./pkg/
+COPY ./pkg/server/* ./pkg/server/
+COPY ./pkg/middleware ./pkg/
+COPY ./pkg/middleware/* ./pkg/middleware/
+COPY ./pkg/logger ./pkg/
+COPY ./pkg/logger/* ./pkg/logger/
+COPY ./pkg/consumer ./pkg/
+COPY ./pkg/consumer/* ./pkg/consumer/
+
+#RUN ls -l
+#RUN pwd
+
+RUN go mod download 
+#RUN protoc -I. -I$GOPATH/src --go_out=plugins=grpc:. api/proto/books.proto
+RUN go build cmd/server/main.go
+RUN ls -l
+
+EXPOSE ${GRPC_PORT}
+EXPOSE ${K_PORT}
+
+CMD ./main -grpcport=${GRPC_PORT} -kafkahost=${K_HOST} -kafkaport=${K_PORT}
+

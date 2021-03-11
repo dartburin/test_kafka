@@ -1,0 +1,53 @@
+FROM golang:latest
+
+ARG A_GRPC_HOST=0.0.0.0
+ARG A_GRPC_PORT=1111
+
+
+ENV APP_NAME proxy
+
+ENV GRPC_HOST=${A_GRPC_HOST}
+ENV GRPC_PORT=${A_GRPC_PORT}
+
+#RUN go version
+
+RUN mkdir -p ${GOPATH}/src/${APP_NAME}
+WORKDIR ${GOPATH}/src/${APP_NAME}
+
+COPY go.mod ./
+COPY go.sum ./
+
+COPY ./cmd ./
+COPY ./cmd/client/ ./cmd/
+COPY ./cmd/client/* ./cmd/client/
+
+COPY ./api ./
+COPY ./api/proto ./api/
+COPY ./api/proto/* ./api/proto/
+COPY ./api/encode ./api/
+COPY ./api/encode/* ./api/encode/
+
+#COPY ./third_party ./
+
+COPY ./pkg/ ./
+COPY ./pkg/client ./pkg/
+COPY ./pkg/client/* ./pkg/client/
+COPY ./pkg/logger ./pkg/
+COPY ./pkg/logger/* ./pkg/logger/
+COPY ./pkg/producer ./pkg/
+COPY ./pkg/producer/* ./pkg/producer/
+
+#RUN ls -l
+#RUN pwd
+
+RUN go mod download
+#RUN protoc -I. -I$GOPATH/src --grpc-gateway_out=logtostderr=true:. api/proto/sender.proto
+RUN go build cmd/client/main.go
+RUN ls -l
+
+EXPOSE ${GRPC_PORT}
+
+
+#CMD ./main -grpchost=${GRPC_HOST} -grpcport=${GRPC_PORT}
+CMD sleep infinity
+

@@ -1,0 +1,20 @@
+syntax = "proto3";
+package sender;
+
+//import "test_grpc/third_party/api/annotations.proto";
+
+// The library service definition.
+service Sender {
+    rpc SendMessage(SendMsg) returns (Result) {
+    }
+}
+  
+
+message Result {
+	string rez = 1;  
+}
+
+message SendMsg {
+	bytes msg = 1;    
+}
+
